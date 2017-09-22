@@ -15,7 +15,7 @@ queue.process('thumbnail', (job, done) => {
     .then(imageEntry => {
       // 원본 이미지 다운로드
       axios.get(imageEntry.original_url, {
-        responseType: 'arrayBuffer'
+        responseType: 'arraybuffer'
       }).then(res => {
         // 밑의 것을 써주지않으면 json의 형태로 가져온다.
         // 썸네일 생성
@@ -23,7 +23,7 @@ queue.process('thumbnail', (job, done) => {
           .resize(200, 200)
           .crop(sharp.gravity.center)
           .toBuffer()
-      }).then(Buffer=> {
+      }).then(buffer=> {
         // 썸네일 업로드
         return image.uploadImageFile(buffer)
       }).then(location => {
