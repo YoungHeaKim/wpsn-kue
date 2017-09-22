@@ -51,9 +51,27 @@ mainRouter.get('/', (req, res) => {
 
 mainRouter.post('/', (req, res) => {
   // 원본 이미지 업로드
+  image.uploadOriginalFile(req.file)
   // 데이터베이스에 기록
+    .then(location => {
+      query.createImageEntry({
+        original_url: location,
+        title: req.body.title,
+        description: req.body.description
+      })
+    })
   // 썸네일 작업 생성
+    .then(([id]) => {
+      image.createThumbnailJob(queue, id)
+    })
   // 리다이렉트
+    .then(() => {
+      req.flash('info', '성공적으로 업로드 되었습니다. 처리하는데 약간의 시간이 소요됩니다.')
+      res.redirect('/')
+    })
+    .catch(err => {
+      req.flash('error', err.message)
+    })
 })
 
 app.use(mainRouter)
